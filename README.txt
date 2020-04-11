@@ -26,6 +26,9 @@ The list contains all 14 links with their availability status (HTTP code)
 
 You MUST also provide a limit of URLs per level
 
+EXECUTING THE CODE
+Download the code and simply run CrawlerApplication
+
 example request:
 POST http://localhost:8080/api/crawl
 {
@@ -33,3 +36,21 @@ POST http://localhost:8080/api/crawl
 	"depth": 3,
 	"limitPerLevel": 3
 }
+
+PERFORMANCE
+leumi.co.il, depth 5, limit 3
+parallel foreach with no break for url limit 1:24 minutes (150 urls in response?)
+V1 simple with no parallel but with a break, 32s!
+
+depth 5, limit 5
+with completable futures: 46 ses
+
+
+NOTES
+- The ParallelFE class was a different approach I tried, you can look it over, but task #3 is basically the 'CrawlerService'
+- My guess is the parallelization does not maintain the order of urls for task #3
+- CrawlerServiceV1 is Task #2 (Simply point CrawlerController to that class instead if you'd like to run it)
+- The results don't seem to always be perfect, there might be an issue with starting and waiting for all tasks to complete
+- To further support scale can add a DB
+
+

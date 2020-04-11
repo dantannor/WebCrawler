@@ -8,23 +8,17 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
-public class CrawlerService {
+public class CrawlerServiceParallelFE {
     private Set<String> visited;
     private int maxDepth;
     private int limitPerLevel;
-    private List<CompletableFuture> tasks;
 
-    public CrawlerService() {
+    public CrawlerServiceParallelFE() {
         visited = new HashSet<>();
-        tasks = new ArrayList<>();
     }
 
     /**
@@ -40,15 +34,9 @@ public class CrawlerService {
         this.maxDepth = data.getDepth();
         this.limitPerLevel = data.getLimitPerLevel();
         visited.add(data.getUrl());
+
         Page page = new Page(data.getUrl(), 1);
         crawl(page);
-
-        // wait for tasks to complete
-        try{
-            CompletableFuture.allOf(tasks.toArray(new CompletableFuture[tasks.size()])).join();
-        } catch (Exception e){
-            System.out.println(e);
-        }
 
         return page;
     }
@@ -70,34 +58,31 @@ public class CrawlerService {
                 return;
             }
 
-            int limit = 0;
-            for (Element element : pageUrls) {
-                String url = element.attr("abs:href");
-                if (url == null || url.isEmpty()) continue;
-                if (visited.contains(url)) {
-                    System.out.println("Duplicate url: " + element.attr("abs:href"));
-                    continue;
+            AtomicInteger limit = new AtomicInteger(0);
+            pageUrls.parallelStream().forEach(url -> {
+                if (visited.contains(url.attr("abs:href"))) {
+                    System.out.println("Duplicate url: " + url.attr("abs:href"));
+                    return;
                 }
 
-                if (limit >= limitPerLevel){
+                // todo: need to find a way to break
+                if (limit.get() >= limitPerLevel){
                     System.out.println("Reached limit per level: " + limit);
-                    break;
+                    return;
                 }
 
-                CompletableFuture task = CompletableFuture.runAsync(() -> {
-                    Page subPage = new Page(url, page.getDepth() + 1);
-                    page.addSubPage(subPage);
-                    crawl(subPage);
-                });
+                Page subPage = new Page(url.attr("abs:href"), page.getDepth() + 1);
+                page.addSubPage(subPage);
+                crawl(subPage);
 
-                tasks.add(task);
-
-                limit++;
-            }
+                limit.getAndIncrement();
+            });
         } catch (IOException e) {
             System.err.println("URL err '" + page.getUrl() + "': " + e.getMessage());
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 }
 
-
+    
