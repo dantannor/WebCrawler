@@ -1,5 +1,8 @@
 package com.ebay.crawler.service;
 
+/**
+ * Config DTO from the client
+ */
 public class CrawlerData {
     private String url;
     private int depth;

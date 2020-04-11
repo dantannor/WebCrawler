@@ -3,6 +3,9 @@ package com.ebay.crawler.service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A recursive list of lists of pages
+ */
 public class Page {
     private int code;
     private int depth;

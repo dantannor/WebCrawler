@@ -11,15 +11,20 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
-public class Crawler {
+public class CrawlerService {
     private Set<String> visited;
     private int maxDepth;
     private int limitPerLevel;
 
-    public Crawler() {
+    public CrawlerService() {
         visited = new HashSet<>();
     }
-    
+
+    /**
+     * Crawls the page and subpages
+     * @param data contains the config for the crawling operation
+     * @return a recursive list of pages with status codes
+     */
     public Page crawl(CrawlerData data) {
         if (data.getDepth() < 1) throw new IllegalArgumentException("Depth should be a positive number");
         if (data.getLimitPerLevel() < 1) throw new IllegalArgumentException("Limit per level should be a positive number");
@@ -34,7 +39,7 @@ public class Crawler {
         return page;
     }
 
-    public void crawl(Page page){
+    private void crawl(Page page){
         try {
             System.out.println("Connecting to " + page.getUrl());
             Connection.Response response = Jsoup.connect(page.getUrl()).timeout(3000).execute();
