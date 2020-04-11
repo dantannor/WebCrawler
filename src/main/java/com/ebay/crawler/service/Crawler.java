@@ -21,7 +21,8 @@ public class Crawler {
     }
     
     public Page crawl(CrawlerData data) {
-        if (data.getDepth() < 0) throw new IllegalArgumentException("Depth should be non-negative");
+        if (data.getDepth() < 1) throw new IllegalArgumentException("Depth should be a positive number");
+        if (data.getLimitPerLevel() < 1) throw new IllegalArgumentException("Limit per level should be a positive number");
         if (data.getUrl() == null) throw new IllegalArgumentException("Null url");
 
         this.maxDepth = data.getDepth();
