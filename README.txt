@@ -52,6 +52,6 @@ NOTES
 - CrawlerServiceV1 is Task #2 (Simply point CrawlerController to that class instead if you'd like to run it)
 - The results don't seem to always be perfect, there might be an issue with starting and waiting for all tasks to complete
 - To further support scale can add a DB
-- The Java ecosystem was a little bit challenging to work with (multithreading/async/spring), this absorbed a good amount of my time on these projects.
+- The Java ecosystem was a little bit challenging to work with (multithreading/async/spring) as it's been a few years, this absorbed a good amount of my time on these projects.
 
 
